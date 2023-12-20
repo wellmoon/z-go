@@ -55,8 +55,8 @@ func (m *ExpiredMap) Put(key interface{}, val interface{}, timeoutSecond int) {
 }
 
 func (m *ExpiredMap) GetVal(key interface{}) interface{} {
-	m.startCheck()
 	m.lock.Lock()
+	defer m.lock.Unlock()
 	return m.valueMap[key]
 }
 
@@ -68,8 +68,8 @@ func (m *ExpiredMap) Contains(key interface{}) bool {
 }
 
 func (m *ExpiredMap) String() string {
-	m.startCheck()
 	m.lock.Lock()
+	defer m.lock.Unlock()
 	res := ""
 	for k, v := range m.valueMap {
 		res = fmt.Sprintf("%s%v:%v %d\n", res, k, v, m.timeoutMap[k])
@@ -78,7 +78,7 @@ func (m *ExpiredMap) String() string {
 }
 
 func (m *ExpiredMap) IsNil() bool {
-	m.startCheck()
 	m.lock.Lock()
+	defer m.lock.Unlock()
 	return len(m.timeoutMap) == 0
 }
