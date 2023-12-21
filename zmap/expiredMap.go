@@ -28,22 +28,20 @@ func (m *ExpiredMap) startCheck() {
 		m.checkExpired = true
 	}
 	m.checkExpired = true
-	go func() {
-		for {
-			if len(m.timeoutMap) == 0 {
-				m.checkExpired = false
-				break
-			}
-			for k, v := range m.timeoutMap {
-				now := time.Now().UnixMilli()
-				if now > v {
-					delete(m.valueMap, k)
-					delete(m.timeoutMap, k)
-				}
-			}
-			time.Sleep(time.Duration(500) * time.Millisecond)
+	for {
+		if len(m.timeoutMap) == 0 {
+			m.checkExpired = false
+			break
 		}
-	}()
+		for k, v := range m.timeoutMap {
+			now := time.Now().UnixMilli()
+			if now > v {
+				delete(m.valueMap, k)
+				delete(m.timeoutMap, k)
+			}
+		}
+		time.Sleep(time.Duration(500) * time.Millisecond)
+	}
 }
 
 func (m *ExpiredMap) Put(key interface{}, val interface{}, timeoutSecond int) {
